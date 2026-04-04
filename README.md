@@ -1,9 +1,75 @@
 # ⚖️ NIFTY 50 · Stoic-HMM Regime Detector
 
 Detect NIFTY 50 market emotional regimes using Wundt's Valence-Arousal model and Hidden Markov Machines — rooted in Stoic philosophy.
-
 ---
+## What is this?
 
+This project detects the emotional regime of the NIFTY 50 market at any 
+point in time — classifying it into one of four states borrowed directly 
+from Stoic philosophy: Desire, Fear, Pleasure, or Distress.
+
+The core insight is that markets are not just driven by numbers — they are 
+driven by collective human emotion. The Stoics identified four irreducible 
+irrational passions 2,300 years ago. This project maps them onto measurable 
+market signals, projects them onto Wilhelm Wundt's 1896 Valence-Arousal 
+emotional plane, and trains a Hidden Markov Model to detect which regime 
+the market is currently in.
+
+The alpha does not come from being inside a regime — it comes from detecting 
+the transition between regimes. That is when mispricing is largest.
+
+## How it works
+
+1. Four Stoic proxy signals are computed from NIFTY 50 fundamentals:
+   - Desire  → high PE ratio + EPS growth momentum
+   - Fear    → high leverage + declining profit margins  
+   - Pleasure→ high ROE + stable EBITDA margins
+   - Distress→ falling market cap + eroding ROE
+
+2. These four signals are projected onto a 2D Wundt Plane (Valence × 
+   Arousal) using PCA — giving the market a single emotional coordinate 
+   each year.
+
+3. A Gaussian Hidden Markov Model with 4 hidden states is trained on this 
+   coordinate sequence. Each hidden state maps to one Stoic regime.
+
+4. The model outputs a regime label, a confidence score, and posterior 
+   probabilities — telling you not just what regime you are in, but how 
+   certain the model is and whether a transition is approaching.
+
+## What was detected on real NIFTY 50 data (FY2015–FY2024)
+
+| Year   | Regime   | Interpretation                              |
+|--------|----------|---------------------------------------------|
+| FY2015 | FEAR     | High leverage, PE compression               |
+| FY2016 | DISTRESS | Demonetisation shadow, MCap stagnation      |
+| FY2017 | DESIRE   | GST optimism, EPS momentum surge            |
+| FY2018 | PLEASURE | Stable quality rally, low volatility        |
+| FY2019 | PLEASURE | Complacency before IL&FS / NBFC crisis      |
+| FY2020 | DESIRE   | Pre-COVID stimulus euphoria                 |
+| FY2021 | DISTRESS | COVID earnings collapse                     |
+| FY2022 | DESIRE   | Post-COVID reopening peak                   |
+| FY2023 | DISTRESS | Rate hike stress, global risk-off           |
+| FY2024 | PLEASURE | ROE expansion, quality consolidation        |
+
+## Tech stack
+
+- Python · scikit-learn · hmmlearn · FastAPI · Streamlit · Plotly
+- Deployed on Render (backend) + Streamlit Cloud (frontend)
+- GitHub Actions for scheduled data updates
+
+## Philosophical foundation
+
+| Stoic Passion | Wundt Quadrant              | Market Behaviour          |
+|---------------|-----------------------------|---------------------------|
+| Desire        | High Arousal + Positive     | PE exuberance, FOMO       |
+| Fear          | High Arousal + Negative     | Panic, leverage stress    |
+| Pleasure      | Low Arousal + Positive      | Complacency, low vol      |
+| Distress      | Low Arousal + Negative      | Grinding erosion          |
+
+Inspired by: Chrysippus (3rd century BC), Wilhelm Wundt (1896), 
+Hamilton's regime-switching models (1989), and Lo's Adaptive 
+Markets Hypothesis (2004).
 ## 🏗️ Project Structure
 
 ```
