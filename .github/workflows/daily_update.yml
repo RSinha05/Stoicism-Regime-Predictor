@@ -1,0 +1,35 @@
+name: Daily Regime Update
+
+on:
+  schedule:
+    - cron: '30 11 * * 1-5'   # 5:00 PM IST every weekday (11:30 UTC)
+  workflow_dispatch:            # allow manual trigger
+
+jobs:
+  update-regime:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install yfinance pandas numpy scikit-learn hmmlearn requests
+
+      - name: Fetch signals & call API
+        env:
+          API_URL: ${{ secrets.API_URL }}
+        run: python scripts/daily_update.py
+
+      - name: Commit results
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/latest_prediction.json || true
+          git diff --staged --quiet || git commit -m "chore: daily regime update $(date +%F)"
+          git push
